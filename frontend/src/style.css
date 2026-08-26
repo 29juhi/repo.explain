@@ -1,0 +1,61 @@
+:root { font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; color: #172a3a; background: #f5f1e8; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+#app { min-height: 100svh; }
+.app { min-height: 100svh; display: flex; flex-direction: column; background: radial-gradient(circle at 82% 8%, rgba(238, 118, 91, .18), transparent 25rem), #f5f1e8; }
+.topbar, footer { width: min(1180px, calc(100% - 64px)); margin: 0 auto; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 28px 0; }
+.brand { border: 0; background: none; padding: 0; color: #172a3a; font: 700 20px/1 'Courier New', monospace; letter-spacing: 0; }
+.brand-mark, .brand-dot { color: #e56d51; }
+.status-pill, footer { color: #6a766f; font: 12px 'Courier New', monospace; letter-spacing: 0; }
+.status-pill { display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4c9b73; }
+.workspace { width: min(900px, calc(100% - 64px)); margin: 0 auto; padding: 90px 0 100px; flex: 1; }
+.intro { animation: rise .6s ease both; }
+.eyebrow { color: #e56d51; font: 700 11px 'Courier New', monospace; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 20px; }
+.eyebrow span { color: #9ba49c; margin-left: 12px; }
+h1 { font: 700 clamp(50px, 8vw, 92px)/.94 Georgia, serif; letter-spacing: 0; margin: 0; color: #172a3a; }
+h1 span { color: #e56d51; }
+.lede { max-width: 430px; color: #66736d; font-size: 17px; line-height: 1.55; margin: 27px 0 60px; }
+.url-form { animation: rise .6s .1s ease both; }
+.url-form label { display: block; font: 700 12px 'Courier New', monospace; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.input-wrap { background: #fffdf8; border: 1px solid #d3d1c5; border-radius: 4px; display: flex; align-items: center; padding: 7px 7px 7px 20px; max-width: 720px; box-shadow: 0 10px 0 rgba(23, 42, 58, .04); transition: border-color .2s, box-shadow .2s; }
+.input-wrap:focus-within { border-color: #e56d51; box-shadow: 0 10px 0 rgba(229, 109, 81, .12); }
+.input-wrap.has-error { border-color: #b84c48; }
+.input-prefix { color: #9ba49c; font: 15px 'Courier New', monospace; white-space: nowrap; }
+input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: #172a3a; padding: 13px 12px; font: 17px 'Courier New', monospace; }
+input::placeholder { color: #b9b9ad; }
+.input-wrap button { width: 50px; height: 50px; border: 0; border-radius: 3px; background: #e56d51; color: #fffdf8; font-size: 26px; line-height: 1; transition: background .2s, transform .2s; }
+.input-wrap button:hover:not(:disabled) { background: #c9543d; transform: translate(2px, -2px); }
+.input-wrap button:disabled { opacity: .7; }
+.form-hint { color: #9ba49c; font: 12px 'Courier New', monospace; margin: 14px 0; }
+kbd { color: #66736d; border: 1px solid #c9c9be; border-bottom-width: 2px; padding: 2px 5px; border-radius: 3px; }
+.form-hint span { margin: 0 8px; }
+.error-message { color: #b84c48; font-size: 13px; margin: 12px 0; }
+.spinner { display: inline-block; width: 17px; height: 17px; border: 2px solid rgba(255,255,255,.4); border-top-color: white; border-radius: 50%; animation: spin .7s linear infinite; }
+.file-panel { margin-top: 78px; border-top: 1px solid #d3d1c5; animation: rise .5s ease both; }
+.panel-heading { display: flex; justify-content: space-between; align-items: end; padding: 28px 0 22px; }
+.panel-heading .eyebrow { margin-bottom: 11px; }
+h2 { margin: 0; color: #172a3a; font: 22px 'Courier New', monospace; }
+.file-count { display: flex; align-items: baseline; gap: 8px; color: #77817a; font: 12px 'Courier New', monospace; }
+.file-count strong { color: #e56d51; font: 700 36px Georgia, serif; }
+.file-list { border: 1px solid #d3d1c5; background: rgba(255,253,248,.58); }
+.tree-root { padding: 9px 0 12px; }
+.tree-row { display: flex; gap: 12px; align-items: center; min-width: 0; padding: 11px 18px; padding-left: calc(18px + (var(--depth, 0) * 27px)); color: #41534f; font: 13px 'Courier New', monospace; border-bottom: 1px solid #e4e1d7; }
+.tree-row span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.root-row { padding-left: 18px; padding-top: 9px; color: #172a3a; border-bottom: 1px solid #d3d1c5; }
+.folder-row { color: #172a3a; background: rgba(229, 109, 81, .035); }
+.folder-chevron { width: 10px; color: #e56d51; font-size: 16px; line-height: 10px; }
+.folder-icon { width: 15px; height: 11px; display: inline-block; position: relative; border: 1.5px solid #e56d51; border-radius: 2px; background: rgba(229, 109, 81, .12); flex: 0 0 auto; }
+.folder-icon::before { content: ''; position: absolute; width: 6px; height: 3px; left: 1px; top: -4px; border: 1.5px solid #e56d51; border-bottom: 0; border-radius: 2px 2px 0 0; background: #fffdf8; }
+.file-row { color: #596760; }
+.file-row:last-child { border-bottom: 0; }
+.file-icon { color: #e56d51; font-size: 20px; line-height: 0; }
+.empty-state { color: #66736d; font: 14px 'Courier New', monospace; }
+footer { display: flex; justify-content: space-between; padding: 22px 0; border-top: 1px solid #d3d1c5; }
+footer i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #4c9b73; margin-left: 8px; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 650px) { .topbar, footer, .workspace { width: min(100% - 36px, 900px); } .topbar { padding: 22px 0; } .workspace { padding-top: 65px; } .lede { margin-bottom: 42px; } .input-wrap { padding-left: 12px; } .input-prefix { display: none; } .tree-row { padding-left: calc(12px + (var(--depth, 0) * 20px)); } .root-row { padding-left: 12px; } .panel-heading { align-items: start; flex-direction: column; gap: 18px; } footer { font-size: 10px; } }
