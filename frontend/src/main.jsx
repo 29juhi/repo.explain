@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './style.css'
 
 const API_ROOT = 'https://api.github.com'
+const EXPLAINER_API = 'http://localhost:5000'
 
 function parseRepositoryUrl(value) {
   const parsed = new URL(value.trim())
@@ -27,6 +28,15 @@ async function fetchFiles(repository, path = '') {
   return nested.flat()
 }
 
+async function fetchFileCode(repository, path) {
+  const response = await fetch(`${API_ROOT}/repos/${repository.owner}/${repository.name}/contents/${path}`)
+  if (!response.ok) throw new Error('Could not fetch this file from GitHub.')
+  const entry = await response.json()
+  if (!entry.content) throw new Error('GitHub did not return readable file content.')
+  const bytes = Uint8Array.from(atob(entry.content.replace(/\s/g, '')), (character) => character.charCodeAt(0))
+  return new TextDecoder().decode(bytes)
+}
+
 function FileIcon() {
   return <span className="file-icon" aria-hidden="true">•</span>
 }
@@ -41,14 +51,14 @@ function buildFileTree(files) {
       current.directories[part] ??= { directories: {}, files: [] }
       current = current.directories[part]
     })
-    current.files.push(fileName)
+    current.files.push({ name: fileName, path: file })
   })
   return root
 }
 
-function FileTree({ node, depth = 0 }) {
+function FileTree({ node, depth = 0, onFileClick, selectedFile }) {
   const directories = Object.entries(node.directories).sort(([a], [b]) => a.localeCompare(b))
-  const files = [...node.files].sort((a, b) => a.localeCompare(b))
+  const files = [...node.files].sort((a, b) => a.name.localeCompare(b.name))
   return (
     <div className="tree-level">
       {directories.map(([name, child]) => (
@@ -58,13 +68,13 @@ function FileTree({ node, depth = 0 }) {
             <span className="folder-icon" aria-hidden="true" />
             <span>{name}</span>
           </div>
-          <FileTree node={child} depth={depth + 1} />
+          <FileTree node={child} depth={depth + 1} onFileClick={onFileClick} selectedFile={selectedFile} />
         </div>
       ))}
       {files.map((file) => (
-        <div className="tree-row file-row" style={{ '--depth': depth }} key={file}>
-          <FileIcon /><span>{file}</span>
-        </div>
+        <button className={`tree-row file-row ${selectedFile === file.path ? 'selected' : ''}`} style={{ '--depth': depth }} key={file.path} type="button" onClick={() => onFileClick(file.path)}>
+          <FileIcon /><span>{file.name}</span>
+        </button>
       ))}
     </div>
   )
@@ -76,6 +86,10 @@ function App() {
   const [repository, setRepository] = useState(null)
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
+  const [selectedFile, setSelectedFile] = useState('')
+  const [fileCode, setFileCode] = useState('')
+  const [explanation, setExplanation] = useState('')
+  const [explainStatus, setExplainStatus] = useState('idle')
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -99,6 +113,33 @@ function App() {
     setRepository(null)
     setError('')
     setStatus('idle')
+    setSelectedFile('')
+    setFileCode('')
+    setExplanation('')
+    setExplainStatus('idle')
+  }
+
+  async function handleFileClick(path) {
+    setSelectedFile(path)
+    setFileCode('')
+    setExplanation('')
+    setExplainStatus('loading')
+    try {
+      const code = await fetchFileCode(repository, path)
+      setFileCode(code)
+      const response = await fetch(`${EXPLAINER_API}/api/explain`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, file_path: path }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'The explainer could not process this file.')
+      setExplanation(result.explanation)
+      setExplainStatus('success')
+    } catch (requestError) {
+      setExplanation(requestError.message)
+      setExplainStatus('error')
+    }
   }
 
   return (
@@ -133,7 +174,8 @@ function App() {
               <div><p className="eyebrow">Scan complete</p><h2>{repository.owner} / {repository.name}</h2></div>
               <div className="file-count"><strong>{files.length}</strong><span>files found</span></div>
             </div>
-            {files.length ? <div className="file-list"><div className="tree-root"><div className="tree-row root-row"><span className="folder-icon" aria-hidden="true" /><strong>{repository.name}</strong></div><FileTree node={buildFileTree(files)} /></div></div> : <p className="empty-state">No files found in this repository.</p>}
+            {files.length ? <div className="file-list"><div className="tree-root"><div className="tree-row root-row"><span className="folder-icon" aria-hidden="true" /><strong>{repository.name}</strong></div><FileTree node={buildFileTree(files)} onFileClick={handleFileClick} selectedFile={selectedFile} /></div></div> : <p className="empty-state">No files found in this repository.</p>}
+            {selectedFile && <section className="detail-panel" aria-live="polite"><div className="detail-heading"><div><p className="eyebrow">Selected file</p><h3>{selectedFile}</h3></div><span className="detail-status">{explainStatus === 'loading' ? 'Explaining...' : explainStatus === 'success' ? 'Explanation ready' : 'Could not explain'}</span></div><div className="detail-grid"><pre className="code-view"><code>{fileCode || 'Loading source...'}</code></pre><div className={`explanation ${explainStatus === 'error' ? 'explanation-error' : ''}`}><p className="eyebrow">What it does</p>{explainStatus === 'loading' ? <div className="explanation-loading"><span className="spinner dark" />Reading file and asking the explainer...</div> : <p>{explanation}</p>}</div></div></section>}
           </section>
         )}
       </section>
