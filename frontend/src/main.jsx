@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
+import ReactMarkdown from 'react-markdown'
 import './style.css'
 
 const API_ROOT = 'https://api.github.com'
@@ -146,13 +147,11 @@ function App() {
     <main className={status === 'success' ? 'app results-mode' : 'app'}>
       <header className="topbar">
         <button className="brand" onClick={reset} type="button" aria-label="Start a new scan">
-          <span className="brand-mark">/</span> repo<span className="brand-dot">.</span>map
+          <span className="brand-mark">/</span> repo<span className="brand-dot">.</span>explain
         </button>
-        <span className="status-pill"><span className="status-dot" /> GitHub explorer</span>
       </header>
       <section className="workspace">
         <div className="intro">
-          <p className="eyebrow">Repository intelligence <span>01</span></p>
           <h1>See the shape<br />of any repo<span>.</span></h1>
           <p className="lede">Paste a public GitHub URL and get a clean, navigable view of every file inside.</p>
         </div>
@@ -175,11 +174,10 @@ function App() {
               <div className="file-count"><strong>{files.length}</strong><span>files found</span></div>
             </div>
             {files.length ? <div className="file-list"><div className="tree-root"><div className="tree-row root-row"><span className="folder-icon" aria-hidden="true" /><strong>{repository.name}</strong></div><FileTree node={buildFileTree(files)} onFileClick={handleFileClick} selectedFile={selectedFile} /></div></div> : <p className="empty-state">No files found in this repository.</p>}
-            {selectedFile && <section className="detail-panel" aria-live="polite"><div className="detail-heading"><div><p className="eyebrow">Selected file</p><h3>{selectedFile}</h3></div><span className="detail-status">{explainStatus === 'loading' ? 'Explaining...' : explainStatus === 'success' ? 'Explanation ready' : 'Could not explain'}</span></div><div className="detail-grid"><pre className="code-view"><code>{fileCode || 'Loading source...'}</code></pre><div className={`explanation ${explainStatus === 'error' ? 'explanation-error' : ''}`}><p className="eyebrow">What it does</p>{explainStatus === 'loading' ? <div className="explanation-loading"><span className="spinner dark" />Reading file and asking the explainer...</div> : <p>{explanation}</p>}</div></div></section>}
+            {selectedFile && <section className="detail-panel" aria-live="polite"><div className="detail-heading"><div><p className="eyebrow">Selected file</p><h3>{selectedFile}</h3></div><span className="detail-status">{explainStatus === 'loading' ? 'Explaining...' : explainStatus === 'success' ? 'Explanation ready' : 'Could not explain'}</span></div><div className="detail-grid"><pre className="code-view"><code>{fileCode || 'Loading source...'}</code></pre><div className={`explanation ${explainStatus === 'error' ? 'explanation-error' : ''}`}><p className="eyebrow">What it does</p>{explainStatus === 'loading' ? <div className="explanation-loading"><span className="spinner dark" />Reading file and asking the explainer...</div> : <div className="markdown-body"><ReactMarkdown>{explanation}</ReactMarkdown></div>}</div></div></section>}
           </section>
         )}
       </section>
-      <footer><span>Built for curious minds</span><span>Public GitHub API <i /></span></footer>
     </main>
   )
 }

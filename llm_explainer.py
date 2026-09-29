@@ -39,8 +39,12 @@ def explain_chunk(code: str, chunk_type: str = "function") -> str:
     if not HF_API_KEY:
         return "Error: HF_API_KEY is missing. Add it to your .env file."
 
-    prompt = f"""Explain this {chunk_type} in exactly 2-3 short bullet points.
-Use bullet points only, with no paragraphs. Focus on what it does, its inputs, and its outputs.
+    prompt = f"""Provide a detailed and descriptive explanation of this {chunk_type}.
+Please include:
+- **Overall Purpose**: A clear description of what the code does.
+- **Key Functions/Classes**: Highlight important function names or classes and explain what they do.
+- **Inputs and Outputs**: Describe the expected inputs and what it produces.
+Use Markdown formatting to make it easy to read. Be comprehensive but concise.
 
 Code:
 ```python
@@ -49,10 +53,10 @@ Code:
     try:
         response = client.chat_completion(
             messages=[
-                {"role": "system", "content": "You explain code clearly and concisely."},
+                {"role": "system", "content": "You are a helpful coding assistant. You explain code clearly, comprehensively, and use markdown formatting."},
                 {"role": "user", "content": prompt},
             ],
-            max_tokens=150,
+            max_tokens=2000,
             temperature=0.2,
         )
         return response.choices[0].message.content.strip()

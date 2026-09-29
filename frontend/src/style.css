@@ -65,6 +65,10 @@ h3 { margin: 0; color: #172a3a; font: 18px 'Courier New', monospace; overflow-wr
 .code-view { font: 12px/1.65 'Courier New', monospace; white-space: pre-wrap; max-height: 440px; }
 .explanation { background: #fffdf8; color: #41534f; }
 .explanation p:last-child { white-space: pre-line; font-size: 15px; line-height: 1.6; }
+.markdown-body { font-size: 15px; line-height: 1.6; }
+.markdown-body * { font-size: inherit !important; }
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 { margin: 1em 0 0.5em 0; font-weight: 700; }
+.markdown-body p, .markdown-body ul, .markdown-body ol { margin: 0.5em 0; }
 .explanation-error { color: #b84c48; }
 .explanation-loading { display: flex; align-items: center; gap: 10px; font: 12px 'Courier New', monospace; }
 .spinner.dark { border-color: rgba(23,42,58,.25); border-top-color: #e56d51; }
